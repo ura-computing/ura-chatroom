@@ -1,0 +1,7 @@
+struct User:
+    fd i32
+    nick String
+    room String
+    buffer String
+    use "./user/operators"
+    use "./user/methods"

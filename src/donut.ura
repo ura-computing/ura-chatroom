@@ -1,0 +1,85 @@
+use "@/math"
+use "@/unistd"
+
+template<T>:
+    struct Grid:
+        cells Array<T>
+
+        fn fill(count i32, value T):
+            self.cells.resize(count)
+            for i in Range::create(0, count):
+                self.cells[i] = value
+
+        operator [](at i32) &T:
+            return &self.cells[at]
+
+mod donut:
+    W i32 = 60
+    H i32 = 18
+
+    fn glow(light i32) i32:
+        match light / 3:
+            case 0:  return 34
+            case 1:  return 36
+            case 2:  return 97
+            default: return 33
+        return 33
+
+    fn frame(a f64, b f64) String:
+        screen Grid<char>
+        depth Grid<f64>
+        light Grid<i32>
+        screen.fill(W * H, ' ')
+        depth.fill(W * H, 0.0)
+        light.fill(W * H, 0)
+        shades String = ".,-~:;=!*#$@"
+
+        for j in Range::create(0, 90):
+            theta f64 = (j as f64) * 0.07
+            st f64 = sin(theta)
+            ct f64 = cos(theta)
+            for k in Range::create(0, 314):
+                phi f64 = (k as f64) * 0.02
+                sp f64 = sin(phi)
+                cp f64 = cos(phi)
+                circle f64 = ct + 2.0
+                d f64 = 1.0 / (sp * circle * sin(a) + st * cos(a) + 5.0)
+                t f64 = sp * circle * cos(a) - st * sin(a)
+                x i32 = (30.0 + 24.0 * d * (cp * circle * cos(b) - t * sin(b))) as i32
+                y i32 = (9.0 + 12.0 * d * (cp * circle * sin(b) + t * cos(b))) as i32
+                n i32 = (8.0 * (
+                      cos(b) * (st * sin(a) - sp * ct * cos(a))
+                    - sin(a) * sp * ct
+                    - cos(a) * st
+                    - sin(b) * cp * ct
+                )) as i32
+                inside bool = y >= 0 and y < H and x >= 0 and x < W
+                if inside and d > depth[x + W * y]:
+                    at i32 = x + W * y
+                    if n < 0:
+                        n = 0
+                    depth[at] = d
+                    screen[at] = shades.at(n)
+                    light[at] = n
+
+        res String = ""
+        for row in Range::create(0, H):
+            res += "  "
+            for col in Range::create(0, W):
+                at i32 = col + W * row
+                if screen[at] != ' ':
+                    res += $"\e[1;{glow(light[at])}m"
+                res.append(screen[at])
+            res += "\e[0m\n"
+        return res
+
+    fn play(frames i32):
+        a f64 = 0.0
+        b f64 = 0.0
+        for i in Range::create(0, frames):
+            if i > 0:
+                io::out($"\e[{H}A")
+            io::out(frame(a, b))
+            a += 0.08
+            b += 0.04
+            usleep(30000)

@@ -1,0 +1,65 @@
+fn color_of(nick String) i32:
+    sum i32 = 0
+    for c in nick:
+        sum += c as i32
+    return 31 + sum % 6
+
+fn rainbow(text String) String:
+    res String = ""
+    i i32 = 0
+
+    for c in text:
+        is_start bool = ((c as u8) & 192) != 128
+        if is_start:
+            res += $"\e[1;{31 + i % 6}m"
+            i += 1
+        res.append(c)
+
+    res += "\e[0m"
+    return res
+
+fn show(line String):
+    kind String = ""
+    rest String = ""
+    room String = ""
+    after String = ""
+    nick String = ""
+    text String = ""
+    protocol::split(line, &kind, &rest)
+
+    clock String = log::clock()
+    io::out("\r\e[2K")
+
+    match protocol::kind_of(kind):
+        case Kind::WELCOME:
+            protocol::split(rest, &nick, &room)
+            self.nick = nick
+            self.room = room
+            io::out($"\e[90m{clock}\e[0m  \e[32mwelcome {nick}, you are in #{room}\e[0m\n")
+
+        case Kind::MSG:
+            protocol::split(rest, &room, &after)
+            protocol::split(after, &nick, &text)
+            color i32 = self.color_of(nick)
+            io::out($"\e[90m{clock}  #{room}\e[0m  \e[1;{color}m{nick}\e[0m  {text}\n")
+
+        case Kind::RAINBOW:
+            protocol::split(rest, &room, &after)
+            protocol::split(after, &nick, &text)
+            color i32 = self.color_of(nick)
+            io::out($"\e[90m{clock}  #{room}\e[0m  \e[1;{color}m{nick}\e[0m  {self.rainbow(text)}\n")
+
+        case Kind::BOT:
+            protocol::split(rest, &room, &text)
+            io::out($"\e[90m{clock}  #{room}\e[0m  \e[1;33mura\e[0m  {text}\n")
+
+        case Kind::INFO:
+            io::out($"\e[90m{clock}  -- {rest}\e[0m\n")
+
+        case Kind::ERROR:
+            io::out($"\e[31m{clock}  !! {rest}\e[0m\n")
+
+        default:
+            io::out($"{line}\n")
+
+    self.prompt()

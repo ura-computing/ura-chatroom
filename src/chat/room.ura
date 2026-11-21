@@ -1,0 +1,5 @@
+struct Room:
+    name String
+    members Array<i32>
+    use "./room/operators"
+    use "./room/methods"

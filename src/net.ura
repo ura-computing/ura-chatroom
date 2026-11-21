@@ -1,0 +1,54 @@
+use "@/net"
+use "@/unistd"
+
+mod net:
+    fn address(a i32, b i32, c i32, d i32, port i32) Array<i8>:
+        data Array<i8>
+        data.resize(16)
+
+        @if os == "macos":
+            data[0] = 16
+            data[1] = 2
+        @else:
+            data[0] = 2
+
+        data[2] = (port >> 8) as i8
+        data[3] = (port & 255) as i8
+        data[4] = a as i8
+        data[5] = b as i8
+        data[6] = c as i8
+        data[7] = d as i8
+        return data
+
+    fn reuse(fd i32):
+        one Array<i32>
+        one.append(1)
+
+        @if os == "macos":
+            setsockopt(fd, 65535, 4, one.data as i8[], 4)
+        @else:
+            setsockopt(fd, 1, 2, one.data as i8[], 4)
+
+    fn listener(port i32) i32:
+        fd i32 = socket(2, 1, 0)
+        if fd < 0:
+            return -1
+        reuse(fd)
+
+        data Array<i8> = address(0, 0, 0, 0, port)
+        is_bound bool = bind(fd, data.data, 16) == 0
+        if not is_bound or listen(fd, 16) < 0:
+            close(fd)
+            return -1
+        return fd
+
+    fn connect_to(a i32, b i32, c i32, d i32, port i32) i32:
+        fd i32 = socket(2, 1, 0)
+        if fd < 0:
+            return -1
+
+        data Array<i8> = address(a, b, c, d, port)
+        if connect(fd, data.data, 16) != 0:
+            close(fd)
+            return -1
+        return fd

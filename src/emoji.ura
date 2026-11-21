@@ -1,0 +1,16 @@
+mod emoji:
+    fn swap(text String, code i8[], icon unic) String:
+        return text.replace(code, $"{icon}".chars())
+
+    fn replace(text String) String:
+        res String = swap(text, ":fire:", '🔥')
+        res = swap(res, ":heart:", '❤')
+        res = swap(res, ":donut:", '🍩')
+        res = swap(res, ":rocket:", '🚀')
+        res = swap(res, ":tada:", '🎉')
+        res = swap(res, ":smile:", '😄')
+        res = swap(res, ":laugh:", '😂')
+        res = swap(res, ":thumbsup:", '👍')
+        res = swap(res, ":wave:", '👋')
+        res = swap(res, ":coffee:", '☕')
+        return res

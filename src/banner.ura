@@ -1,0 +1,38 @@
+mod banner:
+    fn line():
+        io::out("\e[90m─────────────────────────────────────────────\e[0m\n")
+
+    fn art():
+        io::out("\e[1;35m")
+        io::out("   ██████╗██╗  ██╗ █████╗ ████████╗\n")
+        io::out("  ██╔════╝██║  ██║██╔══██╗╚══██╔══╝\n")
+        io::out("  ██║     ███████║███████║   ██║   \n")
+        io::out("  ██║     ██╔══██║██╔══██║   ██║   \n")
+        io::out("  ╚██████╗██║  ██║██║  ██║   ██║   \n")
+        io::out("   ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   \n")
+        io::out("\e[0m")
+
+    fn server(port i32):
+        art()
+        line()
+        io::out($"\e[1;35m  ura chat server\e[0m  \e[90m│\e[0m  port \e[33m{port}\e[0m\n")
+        line()
+
+    fn client(port i32):
+        art()
+        line()
+        io::out($"\e[1;35m  ura chat\e[0m  \e[90m│\e[0m  port \e[33m{port}\e[0m  \e[90m│  /help for commands\e[0m\n")
+        line()
+
+    fn help():
+        io::out("
+            \e[90m/nick name        change your name\n
+            /join room        move to another room\n
+            /dice             roll a die\n
+            /flip             flip a coin\n
+            /8ball question   ask the magic 8-ball\n
+            /rainbow text     say it in colors\n
+            /donut            eat a spinning donut\n
+            /quit             leave\n
+            emojis: :fire: :heart: :donut: :rocket: :tada: :smile: :laugh: :thumbsup: :wave: :coffee:\e[0m\n
+            ")

@@ -1,0 +1,47 @@
+enum Kind:
+    HELLO, SAY, JOIN, NICK, DICE, FLIP, ASK, RAINBOW, DONUT, QUIT,
+    WELCOME, MSG, INFO, BOT, ERROR, UNKNOWN
+
+mod protocol:
+    fn split(line String, head &String, rest &String):
+        space i32 = line.find(" ")
+        if space < 0:
+            head = line
+            rest = ""
+            return
+        head = line.substr(0, space)
+        rest = line.substr(space + 1, line.len() - space - 1)
+
+    fn kind_of(word String) Kind:
+        name String = word.upper()
+        if name == "HELLO":
+            return Kind::HELLO
+        if name == "SAY":
+            return Kind::SAY
+        if name == "JOIN":
+            return Kind::JOIN
+        if name == "NICK":
+            return Kind::NICK
+        if name == "DICE":
+            return Kind::DICE
+        if name == "FLIP":
+            return Kind::FLIP
+        if name == "ASK":
+            return Kind::ASK
+        if name == "RAINBOW":
+            return Kind::RAINBOW
+        if name == "DONUT":
+            return Kind::DONUT
+        if name == "QUIT":
+            return Kind::QUIT
+        if name == "WELCOME":
+            return Kind::WELCOME
+        if name == "MSG":
+            return Kind::MSG
+        if name == "INFO":
+            return Kind::INFO
+        if name == "BOT":
+            return Kind::BOT
+        if name == "ERROR":
+            return Kind::ERROR
+        return Kind::UNKNOWN

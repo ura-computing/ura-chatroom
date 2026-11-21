@@ -1,0 +1,32 @@
+fn typed(line String) bool:
+    if line.is_empty():
+        return False
+    if not line.starts_with("/"):
+        self.say($"SAY {line}")
+        return False
+    word String = ""
+    rest String = ""
+    protocol::split(line.substr(1, line.len() - 1), &word, &rest)
+    if word == "nick":
+        self.say($"NICK {rest}")
+    elif word == "join":
+        self.say($"JOIN {rest}")
+    elif word == "dice":
+        self.say("DICE")
+    elif word == "flip":
+        self.say("FLIP")
+    elif word == "8ball":
+        self.say($"ASK {rest}")
+    elif word == "rainbow":
+        self.say($"RAINBOW {rest}")
+    elif word == "donut":
+        donut::play(70)
+        self.say("DONUT")
+    elif word == "help":
+        banner::help()
+    elif word == "quit":
+        self.say("QUIT bye")
+        return True
+    else:
+        io::out($"\e[31m!! unknown command /{word}, try /help\e[0m\n")
+    return False

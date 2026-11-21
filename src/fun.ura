@@ -1,0 +1,26 @@
+use "@/stdlib"
+use "@/time"
+
+mod fun:
+    fn seed():
+        srand(time(null) as i32)
+
+    fn dice() i32:
+        return rand() % 6 + 1
+
+    fn flip() String:
+        if rand() % 2 == 0:
+            return "heads"
+        return "tails"
+
+    fn eight_ball() String:
+        match rand() % 8:
+            case 0:  return "it is certain"
+            case 1:  return "without a doubt"
+            case 2:  return "ask again later"
+            case 3:  return "better not tell you now"
+            case 4:  return "don't count on it"
+            case 5:  return "my sources say no"
+            case 6:  return "outlook good"
+            default: return "very doubtful"
+        return "very doubtful"

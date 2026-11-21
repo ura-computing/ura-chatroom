@@ -1,0 +1,3 @@
+operator drop():
+    if self.listener > 0:
+        close(self.listener)

@@ -1,0 +1,30 @@
+use "./net"
+use "./log"
+use "./banner"
+use "./protocol"
+use "./emoji"
+use "./fun"
+use "./chat/user"
+use "./chat/room"
+
+struct Server:
+    listener i32
+    users Array<User>
+    rooms Array<Room>
+    use "./server/operators"
+    use "./server/methods"
+    use "./server/commands"
+    use "./server/extras"
+
+fn main() i32:
+    port i32 = 6667
+    if os::argc > 1:
+        port = os::argv[1].to_int()
+    fun::seed()
+    server Server = Server::create(port)
+    if server.listener < 0:
+        log::stamp("\e[31m", "error", $"can't listen on port {port}")
+        return 1
+    banner::server(port)
+    server.run()
+    return 0

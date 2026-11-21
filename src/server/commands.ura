@@ -1,0 +1,96 @@
+fn command(index i32, line String) bool:
+    word String = ""
+    rest String = ""
+    protocol::split(line, &word, &rest)
+    log::stamp("\e[36m", "recv", $"{self.users[index]}: {line}")
+
+    match protocol::kind_of(word):
+        case Kind::HELLO:   self.on_hello(index, rest)
+        case Kind::SAY:     self.on_say(index, rest)
+        case Kind::JOIN:    self.join(index, rest)
+        case Kind::NICK:    self.on_nick(index, rest)
+        case Kind::DICE:    self.on_dice(index)
+        case Kind::FLIP:    self.on_flip(index)
+        case Kind::ASK:     self.on_ask(index, rest)
+        case Kind::RAINBOW: self.on_rainbow(index, rest)
+        case Kind::DONUT:   self.on_donut(index)
+        case Kind::QUIT:
+            self.quit(index, rest)
+            return True
+        default:
+            throw Error::create($"unknown command {word}")
+    return False
+
+fn room_of(index i32) i32:
+    r i32 = self.find_room(self.users[index].room)
+    if r < 0:
+        throw Error::create("join a room first: /join name")
+    return r
+
+fn on_hello(index i32, nick String):
+    name String = nick
+    if name.is_empty():
+        name = "guest"
+    name = self.unique(name)
+
+    self.users[index].nick = name
+    self.users[index].say($"WELCOME {name} lobby")
+    self.join(index, "lobby")
+
+fn join(index i32, name String):
+    if name.is_empty():
+        throw Error::create("which room? /join name")
+
+    nick String = self.users[index].nick
+    fd i32 = self.users[index].fd
+
+    old i32 = self.find_room(self.users[index].room)
+    if old >= 0:
+        self.rooms[old].remove(fd)
+        self.rooms[old].say($"INFO {nick} left #{self.rooms[old].name}", -1)
+
+    r i32 = self.find_room(name)
+    if r < 0:
+        self.rooms.append(Room::create(name))
+        r = self.rooms.len() - 1
+
+    self.rooms[r].members.append(fd)
+    self.users[index].room = name
+
+    self.rooms[r].say($"INFO {nick} joined {self.rooms[r]}", -1)
+    log::stamp("\e[32m", "join", $"{self.users[index]} -> {self.rooms[r]}")
+
+fn on_say(index i32, text String):
+    if text.is_empty():
+        return
+
+    r i32 = self.room_of(index)
+    room String = self.rooms[r].name
+    nick String = self.users[index].nick
+
+    self.rooms[r].say($"MSG {room} {nick} {emoji::replace(text)}", -1)
+
+fn on_nick(index i32, name String):
+    if name.is_empty():
+        throw Error::create("which name? /nick name")
+    if self.find_user(name) >= 0:
+        throw Error::create($"{name} is taken")
+
+    old String = self.users[index].nick
+    self.users[index].nick = name
+
+    r i32 = self.room_of(index)
+    self.rooms[r].say($"INFO {old} is now {name}", -1)
+
+fn quit(index i32, reason String):
+    fd i32 = self.users[index].fd
+    nick String = self.users[index].nick
+
+    r i32 = self.find_room(self.users[index].room)
+    if r >= 0:
+        self.rooms[r].remove(fd)
+        self.rooms[r].say($"INFO {nick} left ({reason})", -1)
+
+    log::stamp("\e[31m", "quit", $"{self.users[index]} ({reason})")
+    close(fd)
+    self.users.pop(index)

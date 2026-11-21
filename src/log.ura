@@ -1,0 +1,14 @@
+use "@/time"
+
+mod log:
+    fn clock() String:
+        text String
+        text.resize(16)
+
+        now i64 = time(null)
+        size i64 = strftime(text.data as i8[], 16, "%H:%M:%S", localtime(&now))
+        text.resize(size as i32)
+        return text
+
+    fn stamp(color String, tag String, text String):
+        io::out($"\e[90m{clock()}\e[0m  {color}{tag}\e[0m  {text}\n")

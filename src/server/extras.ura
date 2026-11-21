@@ -1,0 +1,38 @@
+fn on_dice(index i32):
+    r i32 = self.room_of(index)
+    room String = self.rooms[r].name
+    nick String = self.users[index].nick
+
+    self.rooms[r].say($"BOT {room} 🎲 {nick} rolled {fun::dice()}", -1)
+
+fn on_flip(index i32):
+    r i32 = self.room_of(index)
+    room String = self.rooms[r].name
+    nick String = self.users[index].nick
+
+    self.rooms[r].say($"BOT {room} 🪙 {nick} flipped {fun::flip()}", -1)
+
+fn on_ask(index i32, question String):
+    if question.is_empty():
+        throw Error::create("ask something: /8ball question")
+
+    r i32 = self.room_of(index)
+    room String = self.rooms[r].name
+    nick String = self.users[index].nick
+    answer String = fun::eight_ball()
+
+    self.rooms[r].say($"BOT {room} 🎱 {nick} asked \"{question}\": {answer}", -1)
+
+fn on_rainbow(index i32, text String):
+    r i32 = self.room_of(index)
+    room String = self.rooms[r].name
+    nick String = self.users[index].nick
+
+    self.rooms[r].say($"RAINBOW {room} {nick} {emoji::replace(text)}", -1)
+
+fn on_donut(index i32):
+    r i32 = self.room_of(index)
+    icon unic = '🍩'
+    nick String = self.users[index].nick
+
+    self.rooms[r].say($"INFO {icon} {nick} is eating a donut", self.users[index].fd)

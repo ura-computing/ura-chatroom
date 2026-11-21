@@ -1,0 +1,8 @@
+pub fn create(fd i32) User:
+    user User
+    user.fd = fd
+    return user
+
+fn say(text String):
+    line String = $"{text}\n"
+    write(self.fd, line.chars(), line.len() as i64)

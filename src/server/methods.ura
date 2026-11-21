@@ -1,0 +1,85 @@
+pub fn create(port i32) Server:
+    server Server
+    server.listener = net::listener(port)
+    return server
+
+fn run():
+    while True:
+        fds Array<Pollfd>
+        fds.append({ fd: self.listener, events: 1 })
+        for user in self.users:
+            fds.append({ fd: user.fd, events: 1 })
+
+        poll(fds.data as i8[], fds.len(), -1)
+
+        if (fds[0].revents & 1) != 0:
+            self.admit()
+
+        i i32 = fds.len() - 1
+        while i >= 1:
+            if (fds[i].revents & 1) != 0:
+                self.receive(i - 1)
+            i -= 1
+
+fn admit():
+    fd i32 = accept(self.listener, null, null)
+    if fd < 0:
+        return
+
+    self.users.append(User::create(fd))
+    log::stamp("\e[32m", "connect", $"fd {fd}")
+
+fn receive(index i32):
+    chunk String
+    chunk.resize(512)
+    n i64 = read(self.users[index].fd, chunk.data as i8[], 512)
+    if n <= 0:
+        self.quit(index, "connection closed")
+        return
+
+    chunk.resize(n as i32)
+    self.users[index].buffer += chunk
+
+    while True:
+        at i32 = self.users[index].buffer.find("\n")
+        if at < 0:
+            return
+
+        size i32 = self.users[index].buffer.len()
+        line String = self.users[index].buffer.substr(0, at).trim()
+        rest String = self.users[index].buffer.substr(at + 1, size - at - 1)
+        self.users[index].buffer = rest
+
+        is_quit bool = False
+        try:
+            is_quit = self.command(index, line)
+        catch e Error:
+            self.users[index].say($"ERROR {e.message}")
+            log::stamp("\e[31m", "error", $"{self.users[index]}: {e.message}")
+
+        if is_quit:
+            return
+
+fn find_user(nick String) i32:
+    for i in Range::create(0, self.users.len()):
+        if self.users[i].nick == nick:
+            return i
+    return -1
+
+fn find_room(name String) i32:
+    for i in Range::create(0, self.rooms.len()):
+        if self.rooms[i].name == name:
+            return i
+    return -1
+
+fn unique(nick String) String:
+    if self.find_user(nick) < 0:
+        return nick
+
+    n i32 = 2
+    while True:
+        candidate String = $"{nick}{n}"
+        if self.find_user(candidate) < 0:
+            return candidate
+        n += 1
+    return nick

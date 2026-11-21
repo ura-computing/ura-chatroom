@@ -1,0 +1,52 @@
+pub fn create(nick String, port i32) Client:
+    client Client
+    client.nick = nick
+    client.fd = net::connect_to(127, 0, 0, 1, port)
+    return client
+
+fn say(text String):
+    line String = $"{text}\n"
+    write(self.fd, line.chars(), line.len() as i64)
+
+fn prompt():
+    io::out("\e[90m>\e[0m ")
+
+fn run():
+    self.say($"HELLO {self.nick}")
+
+    fds Array<Pollfd>
+    fds.append({ fd: 0, events: 1 })
+    fds.append({ fd: self.fd, events: 1 })
+
+    pending String = ""
+
+    while True:
+        poll(fds.data as i8[], fds.len(), -1)
+
+        if (fds[0].revents & 1) != 0:
+            line String = io::input()
+            io::out("\e[1A\e[2K")
+            if self.typed(line):
+                break
+            self.prompt()
+
+        if (fds[1].revents & 1) != 0:
+            chunk String
+            chunk.resize(512)
+            n i64 = read(self.fd, chunk.data as i8[], 512)
+            if n <= 0:
+                io::out("\r\e[2K")
+                log::stamp("\e[31m", "closed", "the server closed the connection")
+                break
+
+            chunk.resize(n as i32)
+            pending += chunk
+
+            while True:
+                at i32 = pending.find("\n")
+                if at < 0:
+                    break
+                self.show(pending.substr(0, at).trim())
+                pending = pending.substr(at + 1, pending.len() - at - 1)
+
+    close(self.fd)

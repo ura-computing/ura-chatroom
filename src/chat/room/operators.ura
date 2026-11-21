@@ -1,0 +1,9 @@
+operator =(other &Room):
+    self.name = other.name
+    self.members = other.members
+
+operator [](at i32) &i32:
+    return &self.members[at]
+
+operator $() String:
+    return $"#{self.name} ({self.members.len()} here)"

@@ -1,0 +1,28 @@
+use "./net"
+use "./log"
+use "./banner"
+use "./protocol"
+use "./donut"
+
+struct Client:
+    fd i32
+    nick String
+    room String
+    use "./client/methods"
+    use "./client/typed"
+    use "./client/show"
+
+fn main() i32:
+    nick String = "guest"
+    port i32 = 6667
+    if os::argc > 1:
+        nick = os::argv[1]
+    if os::argc > 2:
+        port = os::argv[2].to_int()
+    client Client = Client::create(nick, port)
+    if client.fd < 0:
+        log::stamp("\e[31m", "error", $"can't connect to port {port}")
+        return 1
+    banner::client(port)
+    client.run()
+    return 0

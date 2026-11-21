@@ -1,0 +1,8 @@
+operator =(other &User):
+    self.fd = other.fd
+    self.nick = other.nick
+    self.room = other.room
+    self.buffer = other.buffer
+
+operator $() String:
+    return $"{self.nick} (fd {self.fd})"
