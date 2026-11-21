@@ -916,7 +916,7 @@ fn banner(port int) void:
    log("  ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   \n")
    log("[0m")
    log("[0;90m─────────────────────────────────[0m\n")
-   output("[0;32m  URA Chat Server  [0;90m│[0m port [0;33m", port, "[0m\n")
+   io::out($"[0;32m  URA Chat Server  [0;90m│[0m port [0;33m{port}[0m\n")
    log("[0;90m─────────────────────────────────[0m\n\n")
    return
 
