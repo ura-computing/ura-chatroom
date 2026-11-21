@@ -1,8 +1,8 @@
-operator =(other &User):
-    self.fd = other.fd
-    self.nick = other.nick
-    self.room = other.room
-    self.buffer = other.buffer
+operator =(left &User, right &User):
+    left.fd = right.fd
+    left.nick = right.nick
+    left.room = right.room
+    left.buffer = right.buffer
 
-operator $() String:
-    return $"{self.nick} (fd {self.fd})"
+operator $(user &User) String:
+    return $"{user.nick} (fd {user.fd})"

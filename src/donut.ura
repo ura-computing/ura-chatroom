@@ -1,5 +1,5 @@
 use "@/math"
-use "@/unistd"
+use "@/posix/unistd"
 
 template<T>:
     struct Grid:
@@ -10,8 +10,8 @@ template<T>:
             for i in Range::create(0, count):
                 self.cells[i] = value
 
-        operator [](at i32) &T:
-            return &self.cells[at]
+    operator [](grid &Grid, at i32) &T:
+        return &grid.cells[at]
 
 mod donut:
     W i32 = 60

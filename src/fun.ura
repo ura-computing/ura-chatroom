@@ -1,5 +1,5 @@
-use "@/stdlib"
-use "@/time"
+use "@/posix/stdlib"
+use "@/posix/time"
 
 mod fun:
     fn seed():

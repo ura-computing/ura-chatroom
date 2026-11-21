@@ -1,9 +1,9 @@
-operator =(other &Room):
-    self.name = other.name
-    self.members = other.members
+operator =(left &Room, right &Room):
+    left.name = right.name
+    left.members = right.members
 
-operator [](at i32) &i32:
-    return &self.members[at]
+operator [](room &Room, at i32) &i32:
+    return &room.members[at]
 
-operator $() String:
-    return $"#{self.name} ({self.members.len()} here)"
+operator $(room &Room) String:
+    return $"#{room.name} ({room.members.len()} here)"

@@ -3,5 +3,6 @@ struct User:
     nick String
     room String
     buffer String
-    use "./user/operators"
     use "./user/methods"
+
+use "./user/operators"
