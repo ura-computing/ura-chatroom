@@ -10,7 +10,7 @@ A terminal chat room written in [ura](https://github.com/ura-computing/ura-lang)
 
 ```bash
 git clone https://github.com/ura-computing/ura-chatroom && cd ura-chatroom
-ura install
+ura deps install
 
 ura run-server                # terminal 1, listens on port 6667
 ura run-client                # terminal 2, joins #lobby as guest
