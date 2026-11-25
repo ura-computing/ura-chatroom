@@ -1,20 +1,19 @@
-use "@/posix/stdlib"
-use "@/posix/time"
+use "@/posix"
 
 mod fun:
     fn seed():
-        srand(time(null) as i32)
+        cstd::srand(cstd::time(null) as u32)
 
     fn dice() i32:
-        return rand() % 6 + 1
+        return cstd::rand() % 6 + 1
 
     fn flip() String:
-        if rand() % 2 == 0:
+        if cstd::rand() % 2 == 0:
             return "heads"
         return "tails"
 
     fn eight_ball() String:
-        match rand() % 8:
+        match cstd::rand() % 8:
             case 0:  return "it is certain"
             case 1:  return "without a doubt"
             case 2:  return "ask again later"

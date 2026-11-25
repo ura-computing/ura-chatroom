@@ -35,4 +35,4 @@ fn on_donut(index i32):
     icon unic = '🍩'
     nick String = self.users[index].nick
 
-    self.rooms[r].say($"INFO {icon} {nick} is eating a donut", self.users[index].fd)
+    self.rooms[r].say($"INFO {icon} {nick} is eating a donut", self.users[index].socket.fd)

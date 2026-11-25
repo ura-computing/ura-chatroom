@@ -1,12 +1,15 @@
-use "@/posix/time"
+use "@/posix"
 
 mod log:
+    CLOCK_SIZE i32 = 16
+
     fn clock() String:
         text String
-        text.resize(16)
-
-        now i64 = time(null)
-        size i64 = strftime(text.data as i8[], 16, "%H:%M:%S", localtime(&now))
+        text.resize(CLOCK_SIZE)
+        now i64 = cstd::time(null)
+        date cstd::tm
+        cstd::localtime_r(&now, &date)
+        size i64 = cstd::strftime(text.data, CLOCK_SIZE as i64, "%H:%M:%S", &date)
         text.resize(size as i32)
         return text
 

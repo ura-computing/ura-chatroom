@@ -1,5 +1,5 @@
 struct User:
-    fd i32
+    socket net::Socket
     nick String
     room String
     buffer String

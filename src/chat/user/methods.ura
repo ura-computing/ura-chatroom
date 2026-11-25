@@ -1,8 +1,7 @@
-pub fn create(fd i32) User:
-    user User
-    user.fd = fd
-    return user
+pub fn create(socket net::Socket) User:
+    return {
+        socket: socket
+    }
 
 fn say(text String):
-    line String = $"{text}\n"
-    write(self.fd, line.chars(), line.len() as i64)
+    self.socket.send($"{text}\n")

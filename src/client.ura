@@ -1,12 +1,17 @@
 use "@/core"
-use "./net"
+use "@/posix"
 use "./log"
 use "./banner"
 use "./protocol"
 use "./donut"
 
+HOST String = "127.0.0.1"
+PORT i32 = 6667
+CHUNK i32 = 512
+STDIN i32 = 0
+
 struct Client:
-    fd i32
+    socket net::Socket
     nick String
     room String
     use "./client/methods"
@@ -15,15 +20,16 @@ struct Client:
 
 fn main() i32:
     nick String = "guest"
-    port i32 = 6667
+    port i32 = PORT
     if os::argc > 1:
         nick = os::argv[1]
     if os::argc > 2:
         port = os::argv[2].to_int()
-    client Client = Client::create(nick, port)
-    if client.fd < 0:
-        log::stamp("\e[31m", "error", $"can't connect to port {port}")
+    try:
+        client Client = Client::create(nick, port)
+        banner::client(port)
+        client.run()
+    catch e Error:
+        log::stamp("\e[31m", "error", $"can't connect to port {port}: {e.message}")
         return 1
-    banner::client(port)
-    client.run()
     return 0

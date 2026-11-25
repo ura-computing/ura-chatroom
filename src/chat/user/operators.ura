@@ -1,8 +1,8 @@
 operator =(left &User, right &User):
-    left.fd = right.fd
+    left.socket = right.socket
     left.nick = right.nick
     left.room = right.room
     left.buffer = right.buffer
 
 operator $(user &User) String:
-    return $"{user.nick} (fd {user.fd})"
+    return $"{user.nick} (fd {user.socket.fd})"

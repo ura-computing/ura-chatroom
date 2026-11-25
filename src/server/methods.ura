@@ -1,43 +1,45 @@
 pub fn create(port i32) Server:
-    server Server
-    server.listener = net::listener(port)
-    return server
+    return {
+        listener: net::Server::create(port, BACKLOG)
+    }
 
 fn run():
     while True:
-        fds Array<Pollfd>
-        fds.append({ fd: self.listener, events: 1 })
+        sockets Array<net::Socket>
+        sockets.append(self.listener.socket)
         for user in self.users:
-            fds.append({ fd: user.fd, events: 1 })
+            sockets.append(user.socket)
 
-        poll(fds.data as i8[], fds.len(), -1)
+        ready Array<i16> = net::poll(&sockets, cstd::POLLIN, -1)
 
-        if (fds[0].revents & 1) != 0:
+        if (ready[0] & cstd::POLLIN) != 0:
             self.admit()
 
-        i i32 = fds.len() - 1
+        i i32 = ready.len() - 1
         while i >= 1:
-            if (fds[i].revents & 1) != 0:
+            if (ready[i] & cstd::POLLIN) != 0:
                 self.receive(i - 1)
             i -= 1
 
 fn admit():
-    fd i32 = accept(self.listener, null, null)
-    if fd < 0:
-        return
-
-    self.users.append(User::create(fd))
-    log::stamp("\e[32m", "connect", $"fd {fd}")
+    try:
+        socket net::Socket = self.listener.accept()
+        self.users.append(User::create(socket))
+        log::stamp("\e[32m", "connect", $"fd {socket.fd}")
+    catch e Error:
+        log::stamp("\e[31m", "error", $"accept: {e.message}")
 
 fn receive(index i32):
     chunk String
-    chunk.resize(512)
-    n i64 = read(self.users[index].fd, chunk.data as i8[], 512)
-    if n <= 0:
+    try:
+        chunk = self.users[index].socket.recv(CHUNK)
+    catch e Error:
+        self.quit(index, e.message)
+        return
+    if chunk.is_empty():
         self.quit(index, "connection closed")
         return
 
-    chunk.resize(n as i32)
     self.users[index].buffer += chunk
 
     while True:

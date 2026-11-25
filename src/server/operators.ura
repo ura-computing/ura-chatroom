@@ -1,3 +1,2 @@
 operator drop(server &Server):
-    if server.listener > 0:
-        close(server.listener)
+    server.listener.close()

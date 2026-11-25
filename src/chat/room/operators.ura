@@ -2,7 +2,7 @@ operator =(left &Room, right &Room):
     left.name = right.name
     left.members = right.members
 
-operator [](room &Room, at i32) &i32:
+operator [](room &Room, at i32) &net::Socket:
     return &room.members[at]
 
 operator $(room &Room) String:

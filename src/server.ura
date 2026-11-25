@@ -1,5 +1,5 @@
 use "@/core"
-use "./net"
+use "@/posix"
 use "./log"
 use "./banner"
 use "./protocol"
@@ -8,8 +8,12 @@ use "./fun"
 use "./chat/user"
 use "./chat/room"
 
+PORT i32 = 6667
+BACKLOG i32 = 16
+CHUNK i32 = 512
+
 struct Server:
-    listener i32
+    listener net::Server
     users Array<User>
     rooms Array<Room>
     use "./server/methods"
@@ -19,14 +23,15 @@ struct Server:
 use "./server/operators"
 
 fn main() i32:
-    port i32 = 6667
+    port i32 = PORT
     if os::argc > 1:
         port = os::argv[1].to_int()
     fun::seed()
-    server Server = Server::create(port)
-    if server.listener < 0:
-        log::stamp("\e[31m", "error", $"can't listen on port {port}")
+    try:
+        server Server = Server::create(port)
+        banner::server(port)
+        server.run()
+    catch e Error:
+        log::stamp("\e[31m", "error", $"can't listen on port {port}: {e.message}")
         return 1
-    banner::server(port)
-    server.run()
     return 0

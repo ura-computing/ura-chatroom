@@ -42,7 +42,7 @@ fn join(index i32, name String):
         throw Error::create("which room? /join name")
 
     nick String = self.users[index].nick
-    fd i32 = self.users[index].fd
+    fd i32 = self.users[index].socket.fd
 
     old i32 = self.find_room(self.users[index].room)
     if old >= 0:
@@ -54,7 +54,7 @@ fn join(index i32, name String):
         self.rooms.append(Room::create(name))
         r = self.rooms.len() - 1
 
-    self.rooms[r].members.append(fd)
+    self.rooms[r].members.append(self.users[index].socket)
     self.users[index].room = name
 
     self.rooms[r].say($"INFO {nick} joined {self.rooms[r]}", -1)
@@ -83,7 +83,7 @@ fn on_nick(index i32, name String):
     self.rooms[r].say($"INFO {old} is now {name}", -1)
 
 fn quit(index i32, reason String):
-    fd i32 = self.users[index].fd
+    fd i32 = self.users[index].socket.fd
     nick String = self.users[index].nick
 
     r i32 = self.find_room(self.users[index].room)
@@ -92,5 +92,5 @@ fn quit(index i32, reason String):
         self.rooms[r].say($"INFO {nick} left ({reason})", -1)
 
     log::stamp("\e[31m", "quit", $"{self.users[index]} ({reason})")
-    close(fd)
+    self.users[index].socket.close()
     self.users.pop(index)

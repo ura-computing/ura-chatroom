@@ -1,22 +1,22 @@
 pub fn create(name String) Room:
-    room Room
-    room.name = name
-    return room
+    return {
+        name: name
+    }
 
 fn has(fd i32) bool:
     for member in self.members:
-        if member == fd:
+        if member.fd == fd:
             return True
     return False
 
 fn remove(fd i32):
     for i in Range::create(0, self.members.len()):
-        if self.members.at(i) == fd:
+        if self.members[i].fd == fd:
             self.members.pop(i)
             return
 
 fn say(text String, except_fd i32):
     line String = $"{text}\n"
-    for fd in self.members:
-        if fd != except_fd:
-            write(fd, line.chars(), line.len() as i64)
+    for member in self.members:
+        if member.fd != except_fd:
+            member.send(line)

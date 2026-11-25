@@ -1,6 +1,6 @@
 struct Room:
     name String
-    members Array<i32>
+    members Array<net::Socket>
     use "./room/methods"
 
 use "./room/operators"
